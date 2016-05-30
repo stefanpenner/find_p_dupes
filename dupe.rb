@@ -13,8 +13,8 @@ images = Pathname.glob(ARGV[0] + "/**.jpg").map do |file|
   Phashion::Image.new file.to_s
 end
 
-duplicates = images.repeated_combination(2).pmap(CONCURRENCY) do |a ,b|
-  next if a === b
+duplicates = images.repeated_combination(2).pmap(CONCURRENCY) { |a ,b|
+  next if a === b # TODO: filter
 
   if a.duplicate?(b)
     {
@@ -23,7 +23,7 @@ duplicates = images.repeated_combination(2).pmap(CONCURRENCY) do |a ,b|
       result: nil
     }
   end
-end.compact
+}.compact
 
 puts duplicates.map { |dupe|
     a_exif = EXIFR::JPEG.new(dupe[:a])
